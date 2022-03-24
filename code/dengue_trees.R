@@ -2,7 +2,10 @@ library(tidyverse)
 library(ggplot2)
 library(rpart)
 library(rpart.plot)
-library(rsample) 
+library(randomForest)
+library(rsample)
+library(modelr)
+library(fastDummies)
 
 #Question 2
 # Each row in the data set corresponds to a single week in a single city. The 
@@ -19,3 +22,33 @@ library(rsample)
 #   difference between the maximum and minimum temperature for a single day.
 # precipitation_amt: Rainfall for the week in millimeters
 dengue <- read_csv("data/dengue.csv")
+
+#adding dummies for city and season, removing original columns
+dengue = dummy_cols(dengue)
+dengue = dengue %>% select(-c(city, season))
+#dengue = na.exclude(dengue) ### suss NA solution from the internet
+
+#Displays how many NAs are in a given column
+sapply(dengue, function(x) sum(is.na(x)))
+#train-test split
+dengue_split = initial_split(dengue, prop = .8)
+dengue_train = training(dengue_split)
+dengue_test = testing(dengue_split)
+
+dengue_tree = rpart(total_cases ~ . , data = dengue_train)
+
+# both models run pretty quick
+# only 13 out of 1164 observations dropped by excluding NAs
+dengue_forest = randomForest(total_cases ~ season_winter + season_spring 
+                             + season_summer + season_fall 
+                             + city_iq + city_sj
+                             + specific_humidity + tdtr_k + precipitation_amt,
+                              data = dengue_train, importance = TRUE,
+                              na.action = na.exclude)
+######################
+# 194 observations dropped by removing NAs here, less great
+dengue_forest_all = randomForest(total_cases ~ .,
+                             data = dengue_train, importance = TRUE, 
+                             na.action = na.exclude)
+######################
+
