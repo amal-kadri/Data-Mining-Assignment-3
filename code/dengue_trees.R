@@ -35,8 +35,14 @@ dengue_split = initial_split(dengue, prop = .8)
 dengue_train = training(dengue_split)
 dengue_test = testing(dengue_split)
 
-dengue_tree = rpart(total_cases ~ . , data = dengue_train)
+#CART
+dengue_tree = rpart(total_cases ~ season_winter + season_spring 
+                    + season_summer + season_fall 
+                    + city_iq + city_sj
+                    + specific_humidity + tdtr_k + precipitation_amt, 
+                    data = dengue_train, control = rpart.control(cp = 0.00001))
 
+#Random Forest
 # both models run pretty quick
 # only 13 out of 1164 observations dropped by excluding NAs
 dengue_forest = randomForest(total_cases ~ season_winter + season_spring 
