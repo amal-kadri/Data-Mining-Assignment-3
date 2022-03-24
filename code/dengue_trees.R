@@ -4,6 +4,7 @@ library(rpart)
 library(rpart.plot)
 library(rsample) 
 
+#Question 2
 # Each row in the data set corresponds to a single week in a single city. The 
 # variables in the data set are as follows:
 # total_cases: Total recorded number of dengue fever cases that week. This is 
