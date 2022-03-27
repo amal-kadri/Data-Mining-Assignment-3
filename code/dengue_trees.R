@@ -21,7 +21,7 @@ library(fastDummies)
 # tdtr_k: Average Diurnal Temperature Range (DTR) for the week. DTR is the 
 #   difference between the maximum and minimum temperature for a single day.
 # precipitation_amt: Rainfall for the week in millimeters
-dengue <- read_csv("data/dengue.csv")
+dengue <- read_csv(file.path(path, "data/dengue.csv"))
 
 #adding dummies for city and season, removing original columns
 dengue = dummy_cols(dengue)
