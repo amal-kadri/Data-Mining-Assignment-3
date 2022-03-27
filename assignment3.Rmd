@@ -1,0 +1,44 @@
+---
+title: "Assignment 3"
+author: "John Bowman, Amal Kadri, and David Scolari"
+date: "3/27/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+```{r source_path, include=FALSE}
+library(here)
+path <-  here()
+
+source(file.path(path, 'code', 'dengue_trees.R'))
+source(file.path(path, 'code', 'green_certification.R'))
+source(file.path(path, 'code', 'california_housing.R'))
+
+```
+
+## Podcast
+
+```{r pod}
+
+```
+
+## Dengue Trees
+
+```{r dengue_trees}
+
+```
+
+## Green Certification
+
+```{r green_certification}
+
+```
+
+## California Houses
+
+```{r california_houses}
+
+```

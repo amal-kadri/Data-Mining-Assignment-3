@@ -30,6 +30,7 @@ dengue = dengue %>% select(-c(city, season))
 
 #Displays how many NAs are in a given column
 sapply(dengue, function(x) sum(is.na(x)))
+
 #train-test split
 dengue_split = initial_split(dengue, prop = .8)
 dengue_train = training(dengue_split)
