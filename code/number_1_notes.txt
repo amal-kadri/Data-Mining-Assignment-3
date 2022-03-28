@@ -1,0 +1,16 @@
+Why can’t I just get data from a few different cities and run the regression of “Crime” on “Police” to understand how more cops in the streets affect crime? (“Crime” refers to some measure of crime rate and “Police” measures the number of cops in a city.)
+
+because just because crime is correlated with high police, that does not mean the police cause those crimes. maybe there is some unobserved feature about cities that cause them to have a lot of police and a lot of crime, but police may not cause crime 
+
+How were the researchers from UPenn able to isolate this effect? Briefly describe their approach and discuss their result in the “Table 2” below, from the researchers' paper.
+
+clever researchers - example where there's a lot of police but not an increase in crime, terrorism alert level is not linked to crime, but causes cities to add police to shifts, does crime go down when terror is at orange? yes, an instrument for police is orange terror level. still gotta explain table 2
+
+
+Why did they have to control for Metro ridership? What was that trying to capture?
+
+if travel goes down, then crime might go down, victims might go down is it possible that less tourists when terror watch is orange? check with metro ridership 
+
+Below I am showing you "Table 4" from the researchers' paper. Just focus on the first column of the table. Can you describe the model being estimated here? What is the conclusion?
+
+gotta do this 
