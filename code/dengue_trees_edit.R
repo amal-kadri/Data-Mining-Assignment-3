@@ -68,10 +68,24 @@ dengue_forest_all = randomForest(total_cases ~ .,
                              na.action = na.exclude)
 ######################
 
+#boost
+boost1 = gbm(total_cases ~ .,
+                         data = dengue_train,
+             interaction.depth=5, n.trees=500, shrinkage=.05)
+
+# Look at error curve -- stops decreasing much after ~300
+gbm.perf(boost1)
+
+
+yhat_test_gbm = predict(boost1, dengue_test, n.trees=50)
+
 # RMSEs
 modelr::rmse(dengue_tree, dengue_test)
-#modelr::rmse(dengue_forest, dengue_test)
 modelr::rmse(dengue_forest_all, dengue_test) #Best so far
+modelr::rmse(boost1, dengue_test)
+
+# boost predict rmse
+(yhat_test_gbm - dengue_test$total_cases)^2 %>% mean %>% sqrt
 
 # PD plots
 partialPlot(dengue_forest_all, dengue_test, 'specific_humidity', las=1)
