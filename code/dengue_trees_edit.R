@@ -6,6 +6,8 @@ library(randomForest)
 library(rsample)
 library(modelr)
 library(fastDummies)
+library(gbm)
+library(pdp)
 
 # Question 2
 # Each row in the data set corresponds to a single week in a single city. The 
@@ -32,7 +34,7 @@ dengue <- read_csv("data/dengue.csv")
 sapply(dengue, function(x) sum(is.na(x)))
 dengue = na.exclude(dengue) ### suss NA solution from the internet
 dengue$season_num = recode(dengue$season, spring=1, summer=2, fall=3, winter=4)
-dengue$city_num = recode(dengue$city, sj=1, iq=2)
+dengue$city_num = recode(dengue$city, sj=0, iq=1)
 dengue$specific_humidity = as.numeric(dengue$specific_humidity)
 dengue$precipitation_amt = as.numeric(dengue$precipitation_amt)
 
