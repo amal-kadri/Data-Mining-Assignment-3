@@ -6,6 +6,8 @@ library(randomForest)
 library(rsample)
 library(modelr)
 library(fastDummies)
+library(gbm)
+library(pdp)
 
 # Question 2
 # Each row in the data set corresponds to a single week in a single city. The 
@@ -23,50 +25,37 @@ library(fastDummies)
 # precipitation_amt: Rainfall for the week in millimeters
 dengue <- read_csv("data/dengue.csv")
 
-#adding dummies for city and season, removing original columns
-#dengue = dummy_cols(dengue)
-#dengue = dengue %>% select(-c(city, season))
-#dengue = na.exclude(dengue) ### suss NA solution from the internet
-
-#Displays how many NAs are in a given column
+#Displays how many NAs are in a given column, then remove them
+# 214 out of 1456 observations dropped by removing NAs here, not great, but best performance
 sapply(dengue, function(x) sum(is.na(x)))
-dengue = na.exclude(dengue) ### suss NA solution from the internet
+dengue = na.exclude(dengue)
+
+# recoding categorical variables to make PD plots, removing irrelevant columns
 dengue$season_num = recode(dengue$season, spring=1, summer=2, fall=3, winter=4)
-dengue$city_num = recode(dengue$city, sj=1, iq=2)
+dengue$city_num = recode(dengue$city, sj=0, iq=1)
 dengue$specific_humidity = as.numeric(dengue$specific_humidity)
 dengue$precipitation_amt = as.numeric(dengue$precipitation_amt)
-
 dengue = dengue %>% select(-c(city, season))
 view(dengue)
 dengue = as.data.frame(dengue)
+
 #train-test split
 dengue_split = initial_split(dengue, prop = .8)
 dengue_train = training(dengue_split)
 dengue_test = testing(dengue_split)
 
-#CART
-# dengue_tree = rpart(total_cases ~ -season - city + season_num + city_num
-#                     # + season_winter + season_spring 
-#                     # + season_summer + season_fall 
-#                     # + city_iq + city_sj
-#                     + specific_humidity + tdtr_k + precipitation_amt, 
-#                     data = dengue_train, control = rpart.control(cp = 0.00001))
+#CART (CV build in)
+dengue_tree_spec = rpart(total_cases ~ . -ndvi_ne - ndvi_nw - ndvi_se - ndvi_sw,
+                    data = dengue_train, control = rpart.control(cp = 0.00001))
 dengue_tree = rpart(total_cases ~ .,
                     data = dengue_train, control = rpart.control(cp = 0.00001))
 #Random Forest
-# both models run pretty quick
-# only 13 out of 1164 observations dropped by excluding NAs
-# dengue_forest = randomForest(total_cases ~ season_winter + season_spring 
-#                              + season_summer + season_fall 
-#                              + city_iq + city_sj
-#                              + specific_humidity + tdtr_k + precipitation_amt,
-#                               data = dengue_train, importance = TRUE,
-#                               na.action = na.exclude)
-######################
-# 194 observations dropped by removing NAs here, less great, but best performance
 dengue_forest_all = randomForest(total_cases ~ .,
                              data = dengue_train, importance = TRUE, 
                              na.action = na.exclude)
+dengue_forest_spec = randomForest(total_cases ~ . - ndvi_ne - ndvi_nw - ndvi_se - ndvi_sw,
+                                 data = dengue_train, importance = TRUE, 
+                                 na.action = na.exclude)
 ######################
 
 #boost
@@ -82,7 +71,9 @@ yhat_test_gbm = predict(boost1, dengue_test, n.trees=50)
 
 # RMSEs
 modelr::rmse(dengue_tree, dengue_test)
+modelr::rmse(dengue_tree_spec, dengue_test)
 modelr::rmse(dengue_forest_all, dengue_test) #Best so far
+modelr::rmse(dengue_forest_spec, dengue_test)
 modelr::rmse(boost1, dengue_test)
 
 # boost predict rmse
