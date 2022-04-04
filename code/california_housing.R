@@ -56,7 +56,6 @@ calhousing_test = calhousing_test %>%
   mutate(yhat_test = predict(calhousing_forest, calhousing_test),
          abs_diff = abs(yhat_test-medianHouseValue))
 
-view(calhousing_test)
 
 #var import
 varImpPlot(calhousing_forest)
@@ -74,6 +73,8 @@ gbm.perf(cal_boost)
 
 
 yhat_test_gbm = predict(cal_boost, calhousing_test, n.trees=200)
+yhat_test_gbm = predict(cal_boost, calhousing, n.trees=200)
+
 
 rmse(cal_boost, calhousing_test)
 
