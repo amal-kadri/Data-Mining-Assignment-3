@@ -30,15 +30,16 @@ dengue <- read_csv("data/dengue.csv")
 sapply(dengue, function(x) sum(is.na(x)))
 dengue = na.exclude(dengue)
 
+# perhaps use pipe 
 # recoding categorical variables to make PD plots, removing irrelevant columns
 dengue$season_num = recode(dengue$season, spring=1, summer=2, fall=3, winter=4)
 dengue$city_num = recode(dengue$city, sj=0, iq=1)
 dengue$specific_humidity = as.numeric(dengue$specific_humidity)
 dengue$precipitation_amt = as.numeric(dengue$precipitation_amt)
 dengue = dengue %>% select(-c(city, season))
-view(dengue)
 dengue = as.data.frame(dengue)
 
+# 
 #train-test split
 dengue_split = initial_split(dengue, prop = .8)
 dengue_train = training(dengue_split)
@@ -47,6 +48,7 @@ dengue_test = testing(dengue_split)
 #CART (CV build in)
 dengue_tree_spec = rpart(total_cases ~ . -ndvi_ne - ndvi_nw - ndvi_se - ndvi_sw,
                     data = dengue_train, control = rpart.control(cp = 0.00001))
+
 dengue_tree = rpart(total_cases ~ .,
                     data = dengue_train, control = rpart.control(cp = 0.00001))
 #Random Forest
@@ -67,17 +69,20 @@ boost1 = gbm(total_cases ~ .,
 gbm.perf(boost1)
 
 
-yhat_test_gbm = predict(boost1, dengue_test, n.trees=50)
-
 # RMSEs
 modelr::rmse(dengue_tree, dengue_test)
 modelr::rmse(dengue_tree_spec, dengue_test)
 modelr::rmse(dengue_forest_all, dengue_test) #Best so far
 modelr::rmse(dengue_forest_spec, dengue_test)
-modelr::rmse(boost1, dengue_test)
-
+# modelr::rmse(boost1, dengue_test)
+# tests rmse
+yhat_test_gbm = predict(boost1, dengue_test, n.trees=50)
 # boost predict rmse
 (yhat_test_gbm - dengue_test$total_cases)^2 %>% mean %>% sqrt
+
+# make var importance plot
+# use this to decide the PD plots to make
+varImpPlot(dengue_forest_all)
 
 # PD plots
 partialPlot(dengue_forest_all, dengue_test, 'specific_humidity', las=1)

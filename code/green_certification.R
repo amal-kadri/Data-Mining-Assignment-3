@@ -14,12 +14,10 @@ library(gbm)
 path <-  here()
 
 onlygreens <- read.csv(file.path(path, 'data/greenbuildings.csv'))
-view(onlygreens)
 
 # generate relevant variables
-onlygreens = onlygreens %>% mutate(
-  rent_psf = Rent * leasing_rate
-)
+onlygreens = onlygreens %>% 
+  mutate(rent_psf = Rent * leasing_rate)
 
 #remove na
 sapply(onlygreens, function(x) sum(is.na(x)))
@@ -36,12 +34,16 @@ greenX <- model.matrix(rent_psf ~ (.-CS_PropertyID - cluster - amenities- LEED -
 
 greenLasso_Wcomp <- cv.glmnet(x = greenX,y = greenY ,alpha = 1, nfold = 20, trace.it = 1, standardize = FALSE)
 
+### Make table of coeff for display
+
 green_coef_Wcomp = coef(greenLasso_Wcomp) %>% 
   as.matrix() %>% 
   as.data.frame()
 green_coef_Wcomp = green_coef_Wcomp %>% 
   mutate(mag = abs(s1)) %>% 
   filter(mag > 0)
+
+# change row names
 green_coef_Wcomp <- tibble::rownames_to_column(green_coef_Wcomp, "VALUE")
 green_coef_Wcomp = green_coef_Wcomp[2:nrow(green_coef_Wcomp),1]
 green_coef_Wcomp
@@ -80,7 +82,7 @@ boost1 = gbm(rent_psf ~ (.- CS_PropertyID - LEED - Energystar - Rent - leasing_r
 # Look at error curve -- stops decreasing much after ~300
 gbm.perf(boost1)
 
-
+# copy other dengue code for rmse stuff here
 yhat_test_gbm = predict(boost1, green_test, n.trees=200)
 
 #rmse boost
