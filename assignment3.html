@@ -173,6 +173,15 @@ pre code {
 
 <div id="podcast" class="section level2">
 <h2>Podcast</h2>
+<ol style="list-style-type: decimal">
+<li><p>If I want to understand how more cops in the streets affect crime, simply getting data from a few different cities and running the regression of “Crime” on “Police” is insufficient for causal identification. This is because there are likely unobserved factors about cities that are responsible for the number of police and for the amount of crime. For example, if high poverty rates causes crime and leads to high amounts of police on the streets, then running the simple regression of crime on police would identify a positive relationship between crime and police. In this example, police do not cause crime, but that would be the interpretation if you took the regression result as causal.</p></li>
+<li><p>UPenn researchers use terrorism alert levels as an instrument for the amount of police on the street in order to isolate the effect of police on crime. Terrorism alert levels are a good instrument since they are not directly linked to crime (exogenous), but they do cause cities to add police to shifts (relevant). Since terror alert level is exogenous and relevant, using it as an instrument for police numbers effectively identifies the causal effect of police presence on crime.</p></li>
+</ol>
+<p>Tabel 2 shows that when terror level is orange (high), and thus exogenously more police on the street, the expected number of crimes is reduced by about 7. This result is significant at the 5% level. The second column includes a control for metro ridership as a proxy for the number of people on the street. With the ridership control, expected number of crimes reduces by about 6 during high terror alerts.</p>
+<ol start="3" style="list-style-type: decimal">
+<li><p>Controling for metro ridership makes the researchers case that the terror alert level is uncorrelated with crime stronger. Metro ridership is a proxy for foot traffic around the city. If foot traffic decreases when there is a high terror alert level, then crime might also go down because there are less potential victims in the streets. The opposite might also be true, that is, there may be a high terror alert because of a special event (a parade, perhaps), which would also mean more foot traffic and thus more chance for crime. Regardless of the sign of the effect, researchers would want to control for it, so metro ridership is added to the model.</p></li>
+<li><p>The effect of the additional police from the high alert is stronger in District 1 than other districts.</p></li>
+</ol>
 </div>
 <div id="dengue-trees" class="section level2">
 <h2>Dengue Trees</h2>

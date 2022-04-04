@@ -14,19 +14,21 @@ library(gbm)
 library(ggmap)
 library(caret)
 library(MASS)
+library(here)
 path <-  here()
 calhousing <- read.csv(file.path(path, 'data/CAhousing.csv'))
 
 ### stuff
 
-view(calhousing)
-
 #avg rooms
-
 calhousing = calhousing %>% 
   mutate(avg_rooms = totalRooms/households,
-         avg_bedrooms = totalBedrooms/households)
-
+         avg_bedrooms = totalBedrooms/households,
+         rooms_per_person = totalRooms/population,
+         bedrooms_per_person = totalRooms/population, 
+         righ_asfuq = ifelse(medianIncome > 15, 1, 0), 
+         household_density = households/population, 
+         med_inc_percap = medianIncome/population)
 
 #test split
 calhousing_split = initial_split(calhousing, prop = 0.8)
@@ -37,8 +39,14 @@ calhousing_test = testing(calhousing_split)
 calhousing_forest = randomForest(medianHouseValue ~ . - totalRooms - totalBedrooms,
                             data = calhousing_train, importance = TRUE, 
                             na.action = na.exclude)
+
+calhousing_cart = rpart(medianHouseValue ~ . - totalRooms - totalBedrooms,
+                                 data = calhousing_train, 
+                                 na.action = na.exclude)
 #RMSE
 modelr::rmse(calhousing_forest, calhousing_test)
+
+rpart.plot(calhousing_cart)
 
 #predict
 yhat_test = predict(calhousing_forest, calhousing_test)
@@ -121,10 +129,14 @@ varImpPlot(utopia_forest)
 
 # a plot of the original data, using a color scale to show medianHouseValue (or log medianHouseValue) versus longitude (x) and latitude (y)
 
-cali <- get_map("california")
-
-ggmap(cali)
-
-calhousing %>% 
-  ggmap() +
-  geom_point(aes(x = latitude, y = longitude, color = medianHouseValue))
+cali <- ggmap(get_googlemap(center = c(lon = -119.449444, lat = 37.166111), 
+                    zoom = 6, 
+                    maptype = 'satellite'))
+  
+mid = mean(calhousing$medianHouseValue)
+cali + geom_point(data = calhousingsize = 1, 
+                  aes(x = longitude, 
+                           y = latitude, 
+                           color = medianHouseValue)) +
+  scale_color_gradientn(colors = 
+                          c('#014468', '#00A6FF', '#FFFFFF'))
