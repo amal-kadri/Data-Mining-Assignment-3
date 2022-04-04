@@ -125,14 +125,14 @@ calhousing_test = calhousing_test %>%
 
 varImpPlot(utopia_forest)
 
-#sqrt(calhousingLasso$cvm[calhousingLasso$lambda == calhousingLasso$lambda.min])
+# sqrt(calhousingLasso$cvm[calhousingLasso$lambda == calhousingLasso$lambda.min])
 
 # a plot of the original data, using a color scale to show medianHouseValue (or log medianHouseValue) versus longitude (x) and latitude (y)
 
 cali <- ggmap(get_googlemap(center = c(lon = -119.449444, lat = 37.166111), 
                     zoom = 6, 
                     maptype = 'satellite'))
-  
+
 mid = mean(calhousing$medianHouseValue)
 cali + geom_point(data = calhousingsize = 1, 
                   aes(x = longitude, 
