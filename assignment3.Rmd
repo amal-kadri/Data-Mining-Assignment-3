@@ -9,9 +9,14 @@ output: html_document
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
-```{r source_path, include=FALSE}
+```{r source_path, include=FALSE echo = FALSE}
+library(here)
+path <- here()
 
-
+source(file.path(path, 'code', 'lib.R'))
+source(file.path(path, 'code', 'dengue_trees.R'))
+source(file.path(path, 'code', 'green_certification.R'))
+source(file.path(path, 'code', 'california_housing.R'))
 ```
 
 ## Podcast
@@ -44,5 +49,7 @@ Tabel 2 shows that when terror level is orange (high), and thus exogenously more
 ## California Houses
 
 ```{r california_houses}
-
+medprice_map
+yhat_map
+absdiff_map
 ```

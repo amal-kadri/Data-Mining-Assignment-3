@@ -123,7 +123,7 @@ cali <- ggmap(get_googlemap(center = c(lon = -119.449444, lat = 37.166111),
 # same colors but different order
 # I (DS) am partial to this one where white is low and blue is high 
 mid = mean(calhousing$medianHouseValue)
-cali + geom_point(data = calhousing, 
+medpirce_map <- cali + geom_point(data = calhousing, 
                   size = 1, 
                   aes(x = longitude, 
                            y = latitude, 
@@ -133,7 +133,7 @@ cali + geom_point(data = calhousing,
 # map for predicted house meds
 # as noted above, compare color to real data map
 mid = mean(calhousing$yhat_forest)
-cali + geom_point(data = calhousing, 
+yhat_map <- cali + geom_point(data = calhousing, 
                   size = 1, 
                   aes(x = longitude, 
                       y = latitude, 
@@ -144,7 +144,7 @@ cali + geom_point(data = calhousing,
 # since the predications are all relatively the same in accuracy, there's not a whole lotta 
 # color contrast here. 
 mid = mean(calhousing$yhat)
-cali + geom_point(data = calhousing, 
+absdiff_map <- cali + geom_point(data = calhousing, 
                   size = 1, 
                   aes(x = longitude, 
                       y = latitude, 
