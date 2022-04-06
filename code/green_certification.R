@@ -1,27 +1,15 @@
 # green certification
-
-library(tidyverse)
-library(ggplot2)
-library(rpart)
-library(rpart.plot)
-library(randomForest)
-library(rsample)
-library(modelr)
-library(fastDummies)
-library(here)
-library(glmnet)
-library(gbm)
-path <-  here()
-
 onlygreens <- read.csv(file.path(path, 'data/greenbuildings.csv'))
-view(onlygreens)
 
 # generate relevant variables
-onlygreens = onlygreens %>% mutate(
-  rent_psf = Rent * leasing_rate
-)
+onlygreens = onlygreens %>% 
+  mutate(rent_psf = Rent * leasing_rate)
 
-#remove na
+# i'm not convinced that this is what should be done here (DS)
+# but it may indeed be the best option:
+# other options include: imputing 0, estimating somehow
+# also empl_gr is not high on the varImp plot, so we should weigh these 75 obs with this unimportant var
+# remove na
 sapply(onlygreens, function(x) sum(is.na(x)))
 onlygreens = na.exclude(onlygreens)
 
@@ -36,15 +24,17 @@ greenX <- model.matrix(rent_psf ~ (.-CS_PropertyID - cluster - amenities- LEED -
 
 greenLasso_Wcomp <- cv.glmnet(x = greenX,y = greenY ,alpha = 1, nfold = 20, trace.it = 1, standardize = FALSE)
 
-green_coef_Wcomp = coef(greenLasso_Wcomp) %>% 
-  as.matrix() %>% 
-  as.data.frame()
-green_coef_Wcomp = green_coef_Wcomp %>% 
+### Make table of coeff for display
+
+green_coef_Wcomp = coef(greenLasso_Wcomp) %>%
+  as.matrix %>% 
+  as.data.frame() %>% 
   mutate(mag = abs(s1)) %>% 
   filter(mag > 0)
+
+# change row names
 green_coef_Wcomp <- tibble::rownames_to_column(green_coef_Wcomp, "VALUE")
 green_coef_Wcomp = green_coef_Wcomp[2:nrow(green_coef_Wcomp),1]
-green_coef_Wcomp
 
 #lasso model w/o Rent and leasing_rate
 greenY <- green_train$rent_psf
@@ -54,13 +44,11 @@ greenLasso <- cv.glmnet(x = greenX,y = greenY ,alpha = 1, nfold = 20, trace.it =
 
 green_coef = coef(greenLasso) %>% 
   as.matrix() %>% 
-  as.data.frame()
-green_coef = green_coef %>% 
+  as.data.frame()%>% 
   mutate(mag = abs(s1)) %>% 
   filter(mag > 0)
 green_coef <- tibble::rownames_to_column(green_coef, "VALUE")
 green_coef = green_coef[2:nrow(green_coef),1]
-green_coef
 
 #random forest
 green_forest = randomForest(rent_psf ~ (.- CS_PropertyID - LEED - Energystar - Rent - leasing_rate),
@@ -80,12 +68,11 @@ boost1 = gbm(rent_psf ~ (.- CS_PropertyID - LEED - Energystar - Rent - leasing_r
 # Look at error curve -- stops decreasing much after ~300
 gbm.perf(boost1)
 
-
+# copy other dengue code for rmse stuff here
 yhat_test_gbm = predict(boost1, green_test, n.trees=200)
 
-#rmse boost
+# rmse boost
 rmse(boost1, green_test)
-
 varImpPlot(green_forest)
 
 partialPlot(green_forest, green_test, 'age', las=1)
