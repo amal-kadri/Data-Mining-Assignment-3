@@ -36,7 +36,6 @@ dengue$city_num = recode(dengue$city, sj=0, iq=1)
 dengue$specific_humidity = as.numeric(dengue$specific_humidity)
 dengue$precipitation_amt = as.numeric(dengue$precipitation_amt)
 dengue = dengue %>% select(-c(city, season))
-view(dengue)
 dengue = as.data.frame(dengue)
 
 #train-test split
