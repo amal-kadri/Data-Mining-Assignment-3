@@ -89,7 +89,8 @@ green_coef
 ```{r green_certification performance}
 onlygreens_performer
 ```
->>>>>>> 512043ef52a850e3f1850757fc03b0b6fd7492f5
+=======
+green_rating, being a bianary indicator variable, is associated with a linear shift in expected building value of about 30, which is quite unimpressive as a value generating feature. Unsuprisingly, it ranks very low on both the %IncMSE and node purity.
 
 ```{r green_certification how good}
 forest_howgood
