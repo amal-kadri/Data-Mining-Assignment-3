@@ -60,7 +60,7 @@ dengue_forest_spec = randomForest(total_cases ~ . - ndvi_ne - ndvi_nw - ndvi_se 
 #boost
 boost1 = gbm(total_cases ~ .,
                          data = dengue_train,
-             interaction.depth=5, n.trees=500, shrinkage=.05)
+             interaction.depth=5, n.trees=500, shrinkage=.05, cv.folds = 10)
 
 # Look at error curve -- stops decreasing much after ~300
 gbm.perf(boost1)
@@ -74,10 +74,21 @@ modelr::rmse(dengue_tree_spec, dengue_test)
 modelr::rmse(dengue_forest_all, dengue_test) #Best so far
 modelr::rmse(dengue_forest_spec, dengue_test)
 modelr::rmse(boost1, dengue_test)
+<<<<<<< Updated upstream
 
 # boost predict rmse
 (yhat_test_gbm - dengue_test$total_cases)^2 %>% mean %>% sqrt
 
+=======
+# tests rmse
+yhat_test_gbm = predict(boost1, dengue_test, n.trees=50)
+(yhat_test_gbm - dengue_test$total_cases)^2 %>% mean %>% sqrt
+
+# make var importance plot
+# use this to decide the PD plots to make
+forest_all_imp <- varImpPlot(dengue_forest_all)
+
+>>>>>>> Stashed changes
 # PD plots
 partialPlot(dengue_forest_all, dengue_test, 'specific_humidity', las=1)
 partialPlot(dengue_forest_all, dengue_test, 'precipitation_amt', las=1)

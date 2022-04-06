@@ -17,5 +17,4 @@ library(fastDummies)
 library(here)
 
 register_google(key = "AIzaSyDbNTAu-Je8Yk4rru0x-kMBfnSNJo0kKV0")
-
 path <-  here()
