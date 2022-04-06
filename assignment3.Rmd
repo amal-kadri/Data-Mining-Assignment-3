@@ -71,38 +71,50 @@ partialPlot(dengue_forest_all,
 ## Green Certification
 For this model, we elected to use the green_rating field as opposed to just LEED of Energystar to get a big picture look at green certifications. To begin, we reviewed all the variables to exclude for the models. Property and cluster, were omitted due to lack of interrelated relationships with one another. LEED and Energystar were omitted since they both made up the feature of interest green_rating. Rent and leasing_rate were omitted because the outcome variable was a linear combination of the two, and would thus be perfectly collinear. 
 
-The first model we tried was a lasso regression. Each time we tried to trained the model, the coefficients selected were always interactions, which is a tell-tale sign that a tree model would be a good candidate for modeling this data. 
-
-Next we tried a random forest with the same feature specifications, which cut the RMSE almost in half from around 1250 to around 650. We compared it to a boosted tree model, but were only able to yield a RMSE of 850, making the random forest modeling method the winner.
-
-size and stories were responsible for the greatest improvements in the model when the values were not permuted. Since rent per square foot is dependent on the size of a building and stories, the explanatory power of these variables tracks with the outcome being measured. Both size and stories partial dependence graph illustrate this similar relationship, plateauing around 2e+06 sqft and 50 stories respectively
-
-City_Market_Rent held the highest node purity, which is to be expected since it is an aggregation of rent per square foot in the local area. Buildings in the same area are likely to be similar and thus have similar rent and leasing rates. It's partial dependence plot is a gradual slop, which coincides with this reasoning. 
-
-age partial dependence plot sharply rises then gradually falls, representing the loss in values which occurs as a building ages. There is another spike then plateaus when the representative building turns 100 which represents the expected value that is placed on living in a historical building. This explanatory power corroborated with age's high rank on both the %IncMSE and node purity.
-
 <<<<<<< HEAD
 ```{r green_certification coefs}
 green_coef
 ```
 
+The first model we tried was a lasso regression. Each time we tried to trained the model, the coefficients selected were always interactions, which is a tell-tale sign that a tree model would be a good candidate for modeling this data. 
+
 ```{r green_certification performance}
 onlygreens_performer
 ```
-=======
-green_rating, being a bianary indicator variable, is associated with a linear shift in expected building value of about 30, which is quite unimpressive as a value generating feature. Unsuprisingly, it ranks very low on both the %IncMSE and node purity.
+
+
+
 
 ```{r green_certification how good}
 forest_howgood
 ```
 
+Next we tried a random forest with the same feature specifications, which cut the RMSE almost in half from around 1250 to around 650. We compared it to a boosted tree model, but were only able to yield a RMSE of 850, making the random forest modeling method the winner.
+
 ```{r green_certification pd}
-partialPlot(green_forest, green_test, 'age', las=1)
 partialPlot(green_forest, green_test, 'size', las=1)
 partialPlot(green_forest, green_test, 'stories', las=1)
-partialPlot(green_forest, green_test, 'City_Market_Rent', las=1)
-partialPlot(green_forest, green_test, 'green_rating', las=1)
 ```
+
+size and stories were responsible for the greatest improvements in the model when the values were not permuted. Since rent per square foot is dependent on the size of a building and stories, the explanatory power of these variables tracks with the outcome being measured. Both size and stories partial dependence graph illustrate this similar relationship, plateauing around 2e+06 sqft and 50 stories respectively
+
+```{r, green_certification pd 2}
+partialPlot(green_forest, green_test, 'age', las=1)
+```
+
+age partial dependence plot sharply rises then gradually falls, representing the loss in values which occurs as a building ages. There is another spike then plateaus when the representative building turns 100 which represents the expected value that is placed on living in a historical building. This explanatory power corroborated with age's high rank on both the %IncMSE and node purity.
+
+```{r, green_certification pd 3}
+partialPlot(green_forest, green_test, 'City_Market_Rent', las=1)
+```
+
+City_Market_Rent held the highest node purity, which is to be expected since it is an aggregation of rent per square foot in the local area. Buildings in the same area are likely to be similar and thus have similar rent and leasing rates. It's partial dependence plot is a gradual slop, which coincides with this reasoning. 
+
+```{r green_certification pd 4}
+artialPlot(green_forest, green_test, 'green_rating', las=1)
+```
+
+green_rating, being a binary indicator variable, is associated with a linear shift in expected building value of about 30, which is quite unimpressive as a value generating feature. Unsurprisingly, it ranks very low on both the %IncMSE and node purity.
 
 ## California Houses
 
