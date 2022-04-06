@@ -48,7 +48,11 @@ For this model, we elected to use the green_rating field as opposed to just LEED
 
 The first model we tried was a lasso regression. Each time we tried to trained the model, the coefficients selected were always interactions, which is a tell-tale sign that a tree model would be a good candidate for modeling this data. 
 
-Next we tried a random forest with the same feature specifications, which cut the RMSE almost in half from around 1250 to around 650
+Next we tried a random forest with the same feature specifications, which cut the RMSE almost in half from around 1250 to around 650. We compared it to a boosted tree model, but were only able to yield a RMSE of 850, making the random forest modeling method the winner.
+
+size and stories were responsible for the greatest improvements in the model when the values were not permuted. Since rent per square foot is dependent on the size of a building and stories, the explanatory power of these variables tracks with the outcome being measured. City_Market_Rent held the highest node purity, which is to be expected since it is an aggregation of rent per square foot in the local area. Buildings in the same area are likely to be similar and thus have similar rent and leasing rates
+
+
 
 
 ```{r green_certification}
