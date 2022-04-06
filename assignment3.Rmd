@@ -31,9 +31,6 @@ Tabel 2 shows that when terror level is orange (high), inducing police presence 
 
 4. For this table, a more granular look is given to the causal relationship between increased police presence and crime rate using district 1 as a feature. The coefficient reads that the effect of an additional police officer in district 1 is associated with a 2.26 decrease in expected number of crimes and is statistically significant in District 1 at the 95% level,  whereas other districts did not exhibit a statistically significant decrease at this level.
 
-```{r pod}
-```
-
 ## Dengue Trees
 
 ```{r dengue_trees}
