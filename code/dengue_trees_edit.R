@@ -1,28 +1,3 @@
-library(tidyverse)
-library(ggplot2)
-library(rpart)
-library(rpart.plot)
-library(randomForest)
-library(rsample)
-library(modelr)
-library(fastDummies)
-library(gbm)
-library(pdp)
-
-# Question 2
-# Each row in the data set corresponds to a single week in a single city. The 
-# variables in the data set are as follows:
-# total_cases: Total recorded number of dengue fever cases that week. This is 
-  # the outcome variable of interest in all regression models. 
-# city: City in which the data was recorded (sj = San Juan, Puerto Rico; 
-  # iq = Iquitos, Peru) 
-# season: Season the data was recorded (spring, summer, fall, winter) 
-# specific_humidity:Average specific humidity in grams of water per kilogram of 
-  # air for the week. This is a raw measure of humidity based purely on how much 
-  # water is in the air.
-# tdtr_k: Average Diurnal Temperature Range (DTR) for the week. DTR is the 
-#   difference between the maximum and minimum temperature for a single day.
-# precipitation_amt: Rainfall for the week in millimeters
 dengue <- read_csv("data/dengue.csv")
 
 #Displays how many NAs are in a given column, then remove them
@@ -31,12 +6,12 @@ sapply(dengue, function(x) sum(is.na(x)))
 dengue = na.exclude(dengue)
 
 # recoding categorical variables to make PD plots, removing irrelevant columns
-dengue$season_num = recode(dengue$season, spring=1, summer=2, fall=3, winter=4)
-dengue$city_num = recode(dengue$city, sj=0, iq=1)
-dengue$specific_humidity = as.numeric(dengue$specific_humidity)
-dengue$precipitation_amt = as.numeric(dengue$precipitation_amt)
-dengue = dengue %>% select(-c(city, season))
-dengue = as.data.frame(dengue)
+dengue <- dengue %>% 
+  mutate(season_num = recode(season, spring=1, summer=2, fall=3, winter=4), 
+         city_num = recode(city, sj=0, iq=1), 
+         specific_humidity = as.numeric(specific_humidity),
+         precipitation_amt = as.numeric(precipitation_amt)) %>% 
+  dplyr::select(-c(city, season,))
 
 #train-test split
 dengue_split = initial_split(dengue, prop = .8)
@@ -55,6 +30,10 @@ dengue_forest_all = randomForest(total_cases ~ .,
 dengue_forest_spec = randomForest(total_cases ~ . - ndvi_ne - ndvi_nw - ndvi_se - ndvi_sw,
                                  data = dengue_train, importance = TRUE, 
                                  na.action = na.exclude)
+
+varImpPlot(dengue_forest_spec)
+varImpPlot(dengue_forest_all)
+
 ######################
 
 #boost
@@ -64,8 +43,6 @@ boost1 = gbm(total_cases ~ .,
 
 # Look at error curve -- stops decreasing much after ~300
 gbm.perf(boost1)
-
-
 yhat_test_gbm = predict(boost1, dengue_test, n.trees=50)
 
 # RMSEs
@@ -73,23 +50,30 @@ modelr::rmse(dengue_tree, dengue_test)
 modelr::rmse(dengue_tree_spec, dengue_test)
 modelr::rmse(dengue_forest_all, dengue_test) #Best so far
 modelr::rmse(dengue_forest_spec, dengue_test)
-modelr::rmse(boost1, dengue_test)
-<<<<<<< Updated upstream
+modelr::rmse(boost1, dengue_test) # i think this works
 
-# boost predict rmse
-(yhat_test_gbm - dengue_test$total_cases)^2 %>% mean %>% sqrt
-
-=======
-# tests rmse
-yhat_test_gbm = predict(boost1, dengue_test, n.trees=50)
-(yhat_test_gbm - dengue_test$total_cases)^2 %>% mean %>% sqrt
+# # boost predict rmse
+# (yhat_test_gbm - dengue_test$total_cases)^2 %>% mean %>% sqrt
+# 
+# # tests rmse
+# yhat_test_gbm = predict(boost1, dengue_test, n.trees=50)
 
 # make var importance plot
 # use this to decide the PD plots to make
 forest_all_imp <- varImpPlot(dengue_forest_all)
 
->>>>>>> Stashed changes
 # PD plots
-partialPlot(dengue_forest_all, dengue_test, 'specific_humidity', las=1)
-partialPlot(dengue_forest_all, dengue_test, 'precipitation_amt', las=1)
-partialPlot(dengue_forest_all, dengue_test, 'city_num', las=1)
+pd_spechum <- partialPlot(dengue_forest_all, 
+                          dengue_test, 
+                          'specific_humidity', 
+                          las=1)
+
+pd_precip <- partialPlot(dengue_forest_all, 
+                         dengue_test, 
+                         'precipitation_amt', 
+                         las=1)
+
+pd_city <- partialPlot(dengue_forest_all, 
+                       dengue_test, 
+                       'city_num', 
+                       las=1)
