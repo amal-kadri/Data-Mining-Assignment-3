@@ -74,16 +74,19 @@ calhousing_boostest <- train(
   verbose = F
 )
 
-plot(calhousing_boostest)
+boostest <- plot(calhousing_boostest)
 
 test.features = subset(calhousing_test, select=-c(medianHouseValue))
 test.target = subset(calhousing_test, select=medianHouseValue)[,1]
-
 predictions = predict(calhousing_boostest, newdata = test.features)
 
 #gradient boosted RMSE
 ch_boostest <- modelr::rmse(calhousing_boostest, calhousing_test)
 
+rmse <- c(round(ch_forest,3), round(ch_boostest, 3))
+models <- c("Best Forest", "Best Boost")
+
+perform <- cbind(Models = models, RMSE = rmse) %>% as.data.frame() %>%  kable(caption = "Comparing Model Out-of-Sample Performance")
 ## MAPS
 
 calhousing = calhousing %>% 
@@ -106,8 +109,11 @@ medpirce_map <- cali + geom_point(data = calhousing,
                   aes(x = longitude, 
                            y = latitude, 
                            color = medianHouseValue)) +
-  scale_color_gradientn(colors = c('#FFFFFF', '#00A6FF', '#014468')) +
-  labs(title = "California Houses: Median Prices")
+  scale_color_gradientn(colors = c('#014468', '#00A6FF', '#FFFFFF'), label = comma) +
+  labs(title = "California Houses: Median Prices", 
+       x = "longitude",
+       y = "latitude",
+       color = "Median House Price")
 
 # map for predicted house meds
 # as noted above, compare color to real data map
@@ -117,10 +123,11 @@ yhat_map <- cali + geom_point(data = calhousing,
                   aes(x = longitude, 
                       y = latitude, 
                       color = yhat_forest)) +
-  scale_color_gradientn(colors = c('#014468', '#00A6FF', '#FFFFFF')) +
-  labs(title = "California Houses: Estimated Median Prices") + 
-  theme(legend.text = "Median House Price Estimate")
-
+  scale_color_gradientn(colors = c('#014468', '#00A6FF', '#FFFFFF'), label = comma) +
+  labs(title = "California Houses: Estimated Median Prices", 
+       x = "longitude",
+       y = "latitude",
+       color  = "Estimated Med Price ($)")
 # map of abs_diff
 # color needs work , perhaps a interval shift, pin the low part of the gradient at a smaller number
 # since the predications are all relatively the same in accuracy, there's not a whole lotta 
@@ -131,5 +138,8 @@ absdiff_map <- cali + geom_point(data = calhousing,
                   aes(x = longitude, 
                       y = latitude, 
                       color = abs_diff)) +
-  scale_color_gradientn(colors = c('#17B417', '#F2F52A', '#DF4E14')) +
-  labs(title = "California Houses: Best Median House Price Model Error")
+  scale_color_gradientn(colors = c('#17B417', '#F2F52A', '#DF4E14'), label = comma) +
+  labs(title = "California Houses: Best Median House Price Model Error", 
+       x = "longitude",
+       y = "latitude",
+       color = "House Price Error")
