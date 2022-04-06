@@ -38,6 +38,12 @@ Tabel 2 shows that when terror level is orange (high), inducing police presence 
 ```
 
 ## Green Certification
+For this model, we elected to use the green_rating field as opposed to just LEED of Energystar to get a big picture look at green certifications. To begin, we reviewed all the variables to exclude for the models. Property and cluster, were omitted due to lack of interrelated relationships with one another. LEED and Energystar were omitted since they both made up the feature of interest green_rating. Rent and leasing_rate were omitted because the outcome variable was a linear combination of the two, and would thus be perfectly collinear. 
+
+The first model we tried was a lasso regression. Each time we tried to trained the model, the coefficients selected were always interactions, which is a tell-tale sign that a tree model would be a good candidate for modeling this data. 
+
+Next we tried a random forest with the same feature specifications, which cut the RMSE almost in half from around 1250 to around 650
+
 
 ```{r green_certification}
 
