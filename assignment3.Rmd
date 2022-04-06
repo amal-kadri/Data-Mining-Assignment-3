@@ -38,7 +38,7 @@ For this question, we chose to use number of dengue cases (rather than the log) 
 
 Across model specifications and tree types, random forest regressions was a consistent winner when it came to performance. Displayed here are RMSE's for 5 regression models: A tree model with all covariates and one with some amount of feature engineering, the same for random forest, and the best boosted tree model we could make. The RMSE for the random forest with all covariates was the best performing across many train test splits. Even with some manual engineering, and cross validated tuning, we could not get the gradient boosted tree model to outperform the the random forest more than once or twice. This is a testament to why random forests are the benchmark standard for supervised learning techniques, especially since, of all the methods we tried, the random forest was the easiest to implement.
 
-Along with `specific_humidity` and `precipitation_amt`, we chose to include PD plots for `season` and `min_air_temp_k` variables, as they both back up the same underlying temperature relationship. These choices were partially informed by the *variable importance plot* we made from our forest model, choosing variables that seemed to have the strongest effect on dengue cases. Dengue cases seem to rapidly increase at around 18 grams water per kg air, likely because this is the humidity level that allows mosquitos to thrive. Interestingly though, dengue cases seem to decrease with precipitation
+Along with `specific_humidity` and `precipitation_amt`, we chose to include PD plots for `season` and `min_air_temp_k` variables, as they both back up the same underlying temperature relationship. These choices were partially informed by the *variable importance plot* we made from our forest model, choosing variables that seemed to have the strongest effect on dengue cases. Dengue cases seem to rapidly increase at around 18 grams water per kg air, likely because this is the humidity level that allows mosquitoes to thrive. Interestingly though, dengue cases seem to decrease with precipitation, likely because the mosquitoes that spread it aren't out during the heavy rains. Though we did postulate that potentially a lagged precipitation variable of the amount of rain 1-2 weeks prior might actually be correlated with higher dengue cases, as mosquitoes congregate around standing water that might accumulate after rains. It's difficult to make claims about the reasons for the right tail of the plot, as the upturned section is drawn from less than 10% of the data, and it might potentially be anomalous. Both the `season` and `min_air_temp_k` tell the same story that dengue cases tend to increase with temperature, peaking in the summer months. There is a sharp increase in dengue cases at around 297 degrees K (~24 C, ~70 F). Texans know that without some extended cold weather or a nice freeze, mosquitos won't be killed off in the winter and they become unbearable in later months.
 ```{r dengue_trees}
 
 ```
@@ -64,7 +64,28 @@ green_rating, being a bianary indicator variable, is associated with a linear sh
 
 ## California Houses
 
-```{r california_houses}
+```{r california_houses how well}
+howwell_chforest
+```
+
+```{r california_houses importance}
+chf_imp
+```
+
+```{r california_houses pds}
+pd_lat
+pd_lng
+```
+
+```{r california_houses boostest}
+boostest
+```
+
+```{r california_houses rmse}
+perform
+```
+
+```{r california_houses maps}
 medprice_map
 yhat_map
 absdiff_map

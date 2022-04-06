@@ -104,7 +104,7 @@ cali <- ggmap(get_googlemap(center = c(lon = -119.449444, lat = 37.166111),
 # same colors but different order
 # I (DS) am partial to this one where white is low and blue is high 
 mid = mean(calhousing$medianHouseValue)
-medpirce_map <- cali + geom_point(data = calhousing, 
+medprice_map <- cali + geom_point(data = calhousing, 
                   size = 1, 
                   aes(x = longitude, 
                            y = latitude, 
