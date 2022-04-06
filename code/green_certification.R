@@ -59,8 +59,8 @@ sqrt(mean((test.target - predictions)^2))
 
 # rmse comparison
 sqrt(greenLasso$cvm[greenLasso$lambda == greenLasso$lambda.min])
-modelr::rmse(green_forest, green_test)
 rmse(boost1, green_test)
+rmse(green_forest, green_test)
 
 #var importance and partial dependencies 
 varImpPlot(green_forest)
