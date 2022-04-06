@@ -81,7 +81,7 @@ Next we tried a random forest with the same feature specifications, which cut th
 onlygreens_performer
 ```
 
-'size' and 'stories' were responsible for the greatest improvements in the model when the values were not permuted. Since rent per square foot is dependent on the size of a building and stories, the explanatory power of these variables tracks with the outcome being measured. Both size and stories partial dependence graph illustrate this similar relationship, plateauing around 2e+06 sqft and 50 stories respectively.
+`size` and `stories` were responsible for the greatest improvements in the model when the values were not permuted. Since rent per square foot is dependent on the size of a building and stories, the explanatory power of these variables tracks with the outcome being measured. Both size and stories partial dependence graph illustrate this similar relationship, plateauing around 2e+06 sqft and 50 stories respectively.
 
 ```{r green_certification pd}
 partialPlot(green_forest, green_test, 'size', las=1)
@@ -94,13 +94,13 @@ partialPlot(green_forest, green_test, 'stories', las=1)
 partialPlot(green_forest, green_test, 'age', las=1)
 ```
 
-'City_Market_Rent' held the highest node purity, which is to be expected since it is an aggregation of rent per square foot in the local area. Buildings in the same area are likely to be similar and thus have similar rent and leasing rates. It's partial dependence plot is a gradual slop, which coincides with this reasoning. 
+`City_Market_Rent` held the highest node purity, which is to be expected since it is an aggregation of rent per square foot in the local area. Buildings in the same area are likely to be similar and thus have similar rent and leasing rates. It's partial dependence plot is a gradual slop, which coincides with this reasoning. 
 
 ```{r, green_certification pd 3}
 partialPlot(green_forest, green_test, 'City_Market_Rent', las=1)
 ```
 
-'green_rating', being a binary indicator variable, is associated with a linear shift in expected building value of about 30, which is quite unimpressive as a value generating feature. Unsurprisingly, it ranks very low on both the %IncMSE and node purity.
+`green_rating`, being a binary indicator variable, is associated with a linear shift in expected building value of about 30, which is quite unimpressive as a value generating feature. Unsurprisingly, it ranks very low on both the %IncMSE and node purity.
 
 ```{r green_certification pd 4}
 partialPlot(green_forest, green_test, 'green_rating', las=1)
@@ -118,11 +118,11 @@ perform
 varImpPlot(calhousing_forest)
 ```
 
-Some key analysis can be reaped from the following partial dependence plots. As longitude becomes less negative (moving eastward from the coast), predicted housing prices drop. 
+Some key analysis can be reaped from the following partial dependence plots. First, as `longitude` becomes less negative (moving eastward from the coast), predicted housing prices drop. 
 
-The 'latitude' partial dependence plot also reveals incite about housing prices in California. In general, Southern latitudes are predicted to be more expensive that northern ones. Looking at the map, what we would expect to see two bumps in this general trend for the cluster of houses near Los Angeles and San Francisco. This PD plot has the LA cluster as higher than the SF plot. This is likely due to the fact that there are more cheap houses east of SF but at the same latitude. By contrast, east of LA there are not as many cheap houses. 
+Also, the `latitude` partial dependence plot also reveals incite about housing prices in California. In general, Southern latitudes are predicted to be more expensive that northern ones. Looking at the map, what we would expect to see two bumps in this general trend for the cluster of houses near Los Angeles and San Francisco. This PD plot has the LA cluster as higher than the SF plot. This is likely due to the fact that there are more cheap houses east of San Francisco along the same latitude. By contrast, east of Los Angeles there are not as many cheap houses. 
 
-The final PD plot shows how predictions change with median income. Tracts with higher median income have higher house prices, which is what we would expect. 
+The final PD plot shows how predictions change with `medianIncome`. Tracts with higher median income have higher house prices, which is what we would expect. 
 
 ```{r california_houses pds}
 partialPlot(calhousing_forest, calhousing_test, 'longitude', las=1)
