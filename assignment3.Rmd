@@ -19,6 +19,7 @@ source(file.path(path, 'code', 'green_certification.R'))
 source(file.path(path, 'code', 'california_housing.R'))
 ```
 
+
 ## Podcast
 
 1. If I want to understand how more cops in the streets affect crime, simply getting data from a few different cities and running the regression of “Crime” on “Police” is insufficient for causal identification. This is because there are likely unobserved confounding factors about cities that are responsible for the number of police and for the amount of crime. For example, if high poverty rates causes crime and leads to high amounts of police on the streets, then running the simple regression of crime on police would identify a positive relationship between crime and police. In this example, police do not cause crime, but that would be the interpretation if you took the regression result as causal. 
