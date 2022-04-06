@@ -113,26 +113,29 @@ green_rating, being a binary indicator variable, is associated with a linear shi
 
 ## California Houses
 
-```{r california_houses how well}
-howwell_chforest
-```
-type stuff here
-```{r california_houses importance}
-varImpPlot(calhousing_forest)
-```
-
-```{r california_houses pds}
-partialPlot(calhousing_forest, calhousing_test, 'longitude', las=1)
-partialPlot(calhousing_forest, calhousing_test, 'latitude', las=1)
-```
-
-```{r california_houses boostest}
-boostest
-```
+To predict census tract median house prices, we tried the two sharpest knives in our roll; random forests and gradient boosted trees. The below table shows that our random forest model outperforms the boosted trees model.
 
 ```{r california_houses rmse}
 perform
 ```
+
+```{r california_houses importance}
+varImpPlot(calhousing_forest)
+```
+
+Some key analysis can be reaped from the following partial dependence plots. As longitude becomes less negative (moving eastward from the coast), predicted housing prices drop. 
+
+The latitude partial dependence plot also reveals incite about housing prices in California. In general, Southern latitudes are predicted to be more expensive that northern ones. Looking at the map, what we would expect to see two bumps in this general trend for the cluster of houses near Los Angeles and San Francisco. This PD plot has the LA cluster as higher than the SF plot. This is likely due to the fact that there are more cheap houses east of SF but at the same latitude. By contrast, east of LA there are not as many cheap houses. 
+
+The final PD plot shows how predictions change with median income. Tracts with higher median income have higher house prices, which is what we would expect. 
+
+```{r california_houses pds}
+partialPlot(calhousing_forest, calhousing_test, 'longitude', las=1)
+partialPlot(calhousing_forest, calhousing_test, 'latitude', las=1)
+partialPlot(calhousing_forest, calhousing_test, 'medianIncome', las = 1)
+```
+
+The below fisrt map show clear clusters around San Francisco and Los Angeles in the raw house price data. In general, the forest model does a good job of capturing this trend. You can see this because the second map looks very similar to the first one. Also, the third map shows relatively low model error.
 
 ```{r california_houses maps}
 medprice_map

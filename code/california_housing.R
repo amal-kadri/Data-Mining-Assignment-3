@@ -36,6 +36,8 @@ chf_imp <- varImpPlot(calhousing_forest)
 #partial deps
 pd_lng <- partialPlot(calhousing_forest, calhousing_test, 'longitude', las=1)
 pd_lat <- partialPlot(calhousing_forest, calhousing_test, 'latitude', las=1)
+partialPlot(calhousing_forest, calhousing_test, 'medianIncome', las = 1)
+
 
 # operation "4th Booster"
 # dev a gradient boosted tree based model of med house prices
@@ -74,7 +76,6 @@ calhousing_boostest <- train(
   verbose = F
 )
 
-boostest <- plot(calhousing_boostest)
 
 # this is causing trouble when I knit
 # test.features = subset(calhousing_test, select=-c(medianHouseValue))
