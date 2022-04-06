@@ -78,8 +78,6 @@ onlygreens_performer
 ```
 
 
-
-
 ```{r green_certification how good}
 forest_howgood
 ```
