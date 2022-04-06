@@ -128,7 +128,7 @@ partialPlot(calhousing_forest, calhousing_test, 'latitude', las=1)
 partialPlot(calhousing_forest, calhousing_test, 'medianIncome', las = 1)
 ```
 
-The below fisrt map show clear clusters around San Francisco and Los Angeles in the raw house price data. In general, the forest model does a good job of capturing this trend. You can see this because the second map looks very similar to the first one. Also, the third map shows relatively low model error.
+The first map below shows clear clusters around San Francisco and Los Angeles in the raw house price data. In general, the forest model does a good job of capturing this trend. You can see this because the second map looks very similar to the first one. Also, the third map shows relatively low model error.
 
 ```{r california_houses maps}
 medprice_map
