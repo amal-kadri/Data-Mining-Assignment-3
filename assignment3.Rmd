@@ -81,6 +81,7 @@ City_Market_Rent held the highest node purity, which is to be expected since it 
 
 age partial dependence plot sharply rises then gradually falls, representing the loss in values which occurs as a building ages. There is another spike then plateaus when the representative building turns 100 which represents the expected value that is placed on living in a historical building. This explanatory power corroborated with age's high rank on both the %IncMSE and node purity.
 
+<<<<<<< HEAD
 ```{r green_certification coefs}
 green_coef
 ```
@@ -88,6 +89,7 @@ green_coef
 ```{r green_certification performance}
 onlygreens_performer
 ```
+>>>>>>> 512043ef52a850e3f1850757fc03b0b6fd7492f5
 
 ```{r green_certification how good}
 forest_howgood
