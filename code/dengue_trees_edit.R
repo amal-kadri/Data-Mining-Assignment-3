@@ -46,9 +46,31 @@ boost1 = gbm(total_cases ~ .,
                          data = dengue_train,
              interaction.depth=5, n.trees=500, shrinkage=.05, cv.folds = 10)
 
+ctrl <- trainControl(
+  method = "cv",
+  number = 10
+)
+
+tuneGrid <- expand.grid(
+  n.trees = c(50, 60, 70, 80, 90, 100),
+  interaction.depth = c(1, 2, 3, 4, 5),
+  shrinkage = 0.1,
+  n.minobsinnode = 10
+)
+
+dengue_boost <- train(
+  total_cases ~ .,
+  data = dengue_train,
+  method = 'gbm',
+  trControl = ctrl,
+  tuneGrid = tuneGrid,
+  verbose = F
+)
+
 # Look at error curve -- stops decreasing much after ~300
-gbm.perf(boost1)
+gbm.perf(dengue)
 yhat_test_gbm = predict(boost1, dengue_test, n.trees=50)
+yhat_test_gbm = predict(dengue_boost, dengue_test, n.trees=50)
 
 # RMSEs
 tree_all = modelr::rmse(dengue_tree, dengue_test)
@@ -56,6 +78,7 @@ tree_engineer = modelr::rmse(dengue_tree_spec, dengue_test)
 forest_all = modelr::rmse(dengue_forest_all, dengue_test) #Best so far
 forest_engineer = modelr::rmse(dengue_forest_spec, dengue_test)
 boost_all = modelr::rmse(boost1, dengue_test) # i think this works
+boost_cv = modelr::rmse(dengue_boost, dengue_test)
 
 model = c("tree_all", "tree_engineer", "forest_all", "forest_engineer", "boost_all")
 rmse = c(tree_all, tree_engineer, forest_all, forest_engineer, boost_all)
@@ -72,22 +95,22 @@ rmse_table = data.frame(model,rmse)
 forest_all_imp_plot <- varImpPlot(dengue_forest_all)
 
 # PD plots
-pd_season <- partialPlot(dengue_forest_all, 
-                         dengue_test, 
-                         'season_num', 
-                         las=1)
 pd_spechum <- partialPlot(dengue_forest_all, 
                           dengue_test, 
                           'specific_humidity', 
                           las=1)
+pd_city <- partialPlot(dengue_forest_all, 
+                       dengue_test, 
+                       'precipitation_amt', 
+                       las=1)
+pd_season <- partialPlot(dengue_forest_all, 
+                         dengue_test, 
+                         'season_num', 
+                         las=1)
 pd_min_temp <- partialPlot(dengue_forest_all, 
                        dengue_test, 
                        'min_air_temp_k', 
                        las=1)
 
-pd_city <- partialPlot(dengue_forest_all, 
-                       dengue_test, 
-                       'city_num', 
-                       las=1)
 
 
