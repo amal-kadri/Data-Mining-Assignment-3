@@ -64,23 +64,23 @@ informative than the log equivalents.
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">tree_all</td>
-<td style="text-align: right;">33.87434</td>
+<td style="text-align: right;">32.20007</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">tree_engineer</td>
-<td style="text-align: right;">33.78421</td>
+<td style="text-align: right;">31.13952</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">forest_all</td>
-<td style="text-align: right;">29.94642</td>
+<td style="text-align: right;">27.19579</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">forest_engineer</td>
-<td style="text-align: right;">29.53515</td>
+<td style="text-align: right;">27.81899</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">boost_all</td>
-<td style="text-align: right;">30.50283</td>
+<td style="text-align: right;">28.51664</td>
 </tr>
 </tbody>
 </table>
@@ -143,8 +143,8 @@ trained the model, the coefficients selected were always interactions,
 which is a tell-tale sign that a tree model would be a good candidate
 for modeling this data.
 
-    ## [1] "size:cd_total_07"       "size:total_dd_07"       "size:City_Market_Rent" 
-    ## [4] "hd_total07:total_dd_07"
+    ## [1] "size:stories"           "size:cd_total_07"       "size:total_dd_07"      
+    ## [4] "size:City_Market_Rent"  "hd_total07:total_dd_07"
 
 Next we tried a random forest with the same feature specifications,
 which cut the RMSE almost in half from around 1250 to around 650. We
@@ -162,15 +162,15 @@ of 850, making the random forest modeling method the winner.
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">Lasso</td>
-<td style="text-align: left;">1250.17463070727</td>
+<td style="text-align: left;">1224.06722277022</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Boosted</td>
-<td style="text-align: left;">853.11859739727</td>
+<td style="text-align: left;">924.984065296849</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Random Forest</td>
-<td style="text-align: left;">687.693901508799</td>
+<td style="text-align: left;">738.432380632062</td>
 </tr>
 </tbody>
 </table>
@@ -228,11 +228,11 @@ model.
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">Best Forest</td>
-<td style="text-align: left;">50700.974</td>
+<td style="text-align: left;">50542.481</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Best Boost</td>
-<td style="text-align: left;">52990.615</td>
+<td style="text-align: left;">52663.419</td>
 </tr>
 </tbody>
 </table>
@@ -245,24 +245,24 @@ Some key analysis can be reaped from the following partial dependence
 plots. First, as `longitude` becomes less negative (moving eastward from
 the coast), predicted housing prices drop.
 
-&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD The latitude partial dependence plot
-also reveals incite about housing prices in California. In general,
-Southern latitudes are predicted to be more expensive that northern
-ones. Looking at the map, what we would expect to see two bumps in this
-general trend for the cluster of houses near Los Angeles and San
-Francisco. This PD plot has the LA cluster as higher than the SF plot.
-This is likely due to the fact that there are more cheap houses east of
-SF but at the same latitude. By contrast, east of LA there are not as
-many cheap houses. ======= Also, the `latitude` partial dependence plot
-also reveals incite about housing prices in California. In general,
-Southern latitudes are predicted to be more expensive that northern
-ones. Looking at the map, what we would expect to see two bumps in this
-general trend for the cluster of houses near Los Angeles and San
-Francisco. This PD plot has the LA cluster as higher than the SF plot.
-This is likely due to the fact that there are more cheap houses east of
-San Francisco along the same latitude. By contrast, east of Los Angeles
-there are not as many cheap houses. &gt;&gt;&gt;&gt;&gt;&gt;&gt;
-992b82679b123c972b14831a020e6a0841942712
+The `latitude` partial dependence plot also reveals incite about housing
+prices in California. In general, Southern latitudes are predicted to be
+more expensive that northern ones. Looking at the map, what we would
+expect to see two bumps in this general trend for the cluster of houses
+near Los Angeles and San Francisco. This PD plot has the LA cluster as
+higher than the SF plot. This is likely due to the fact that there are
+more cheap houses east of SF but at the same latitude. By contrast, east
+of LA there are not as many cheap houses.
+
+Also, the `latitude` partial dependence plot also reveals incite about
+housing prices in California. In general, Southern latitudes are
+predicted to be more expensive that northern ones. Looking at the map,
+what we would expect to see two bumps in this general trend for the
+cluster of houses near Los Angeles and San Francisco. This PD plot has
+the LA cluster as higher than the SF plot. This is likely due to the
+fact that there are more cheap houses east of San Francisco along the
+same latitude. By contrast, east of Los Angeles there are not as many
+cheap houses.
 
 The final PD plot shows how predictions change with `medianIncome`.
 Tracts with higher median income have higher house prices, which is what
