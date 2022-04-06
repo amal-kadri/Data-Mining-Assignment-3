@@ -32,13 +32,13 @@ green_coef = coef(greenLasso) %>%
 green_coef <- tibble::rownames_to_column(green_coef, "VALUE")
 green_coef = green_coef[2:nrow(green_coef),1]
 green_coef
+sqrt(greenLasso$cvm[greenLasso$lambda == greenLasso$lambda.min])
 
 #random forest
 green_forest = randomForest(rent_psf ~ (.- CS_PropertyID - LEED - Energystar - Rent - leasing_rate),
                                  data = green_train, importance = TRUE, 
                                  na.action = na.exclude)
 modelr::rmse(green_forest, green_test)
-sqrt(greenLasso$cvm[greenLasso$lambda == greenLasso$lambda.min])
 
 yhat_test = predict(green_forest, green_test)
 plot(yhat_test, green_test$rent_psf)
@@ -54,8 +54,15 @@ gbm.perf(boost1)
 # copy other dengue code for rmse stuff here
 yhat_test_gbm = predict(boost1, green_test, n.trees=200)
 
-# rmse boost
+#gradient boosted RMSE
+sqrt(mean((test.target - predictions)^2))
+
+# rmse comparison
+sqrt(greenLasso$cvm[greenLasso$lambda == greenLasso$lambda.min])
+modelr::rmse(green_forest, green_test)
 rmse(boost1, green_test)
+
+#var importance and partial dependencies 
 varImpPlot(green_forest)
 
 partialPlot(green_forest, green_test, 'age', las=1)
