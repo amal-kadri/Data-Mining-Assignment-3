@@ -61,7 +61,28 @@ size and stories were responsible for the greatest improvements in the model whe
 
 ## California Houses
 
-```{r california_houses}
+```{r california_houses how well}
+howwell_chforest
+```
+
+```{r california_houses importance}
+chf_imp
+```
+
+```{r california_houses pds}
+pd_lat
+pd_lng
+```
+
+```{r california_houses boostest}
+boostest
+```
+
+```{r california_houses rmse}
+perform
+```
+
+```{r california_houses maps}
 medprice_map
 yhat_map
 absdiff_map
