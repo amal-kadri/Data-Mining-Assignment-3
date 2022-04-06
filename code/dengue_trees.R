@@ -69,7 +69,7 @@ dengue_boost <- train(
 
 # AMAL I'M GETTING AN ERROR HERE
 # # Look at error curve -- stops decreasing much after ~300
-# gbmPerf_dengue <- gbm.perf(dengue)
+gbmPerf_dengue <- gbm.perf(boost1)
 
 yhat_test_gbm = predict(boost1, dengue_test, n.trees=50)
 yhat_test_gbm = predict(dengue_boost, dengue_test, n.trees=50)
