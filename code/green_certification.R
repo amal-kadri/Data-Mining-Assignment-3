@@ -20,7 +20,7 @@ green_test = testing(green_split)
 
 #lasso model
 greenY <- green_train$rent_psf
-greenX <- model.matrix(rent_psf ~ (.-CS_PropertyID - cluster - amenities - Rent - leasing_rate - LEED - Energystar)^2 -1, data = green_train)
+greenX <- model.matrix(rent_psf ~ (.-CS_PropertyID - cluster - Rent - leasing_rate - LEED - Energystar)^2 -1, data = green_train)
 
 greenLasso <- cv.glmnet(x = greenX,y = greenY ,alpha = 1, nfold = 20, trace.it = 1, standardize = FALSE)
 
@@ -31,6 +31,7 @@ green_coef = coef(greenLasso) %>%
   filter(mag > 0)
 green_coef <- tibble::rownames_to_column(green_coef, "VALUE")
 green_coef = green_coef[2:nrow(green_coef),1]
+green_coef
 
 #random forest
 green_forest = randomForest(rent_psf ~ (.- CS_PropertyID - LEED - Energystar - Rent - leasing_rate),
