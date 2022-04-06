@@ -76,9 +76,10 @@ calhousing_boostest <- train(
 
 boostest <- plot(calhousing_boostest)
 
-test.features = subset(calhousing_test, select=-c(medianHouseValue))
-test.target = subset(calhousing_test, select=medianHouseValue)[,1]
-predictions = predict(calhousing_boostest, newdata = test.features)
+# this is causing trouble when I knit
+# test.features = subset(calhousing_test, select=-c(medianHouseValue))
+# test.target = subset(calhousing_test, select=medianHouseValue)[,1]
+# predictions = predict(calhousing_boostest, newdata = test.features)
 
 #gradient boosted RMSE
 ch_boostest <- modelr::rmse(calhousing_boostest, calhousing_test)
@@ -86,7 +87,8 @@ ch_boostest <- modelr::rmse(calhousing_boostest, calhousing_test)
 rmse <- c(round(ch_forest,3), round(ch_boostest, 3))
 models <- c("Best Forest", "Best Boost")
 
-perform <- cbind(Models = models, RMSE = rmse) %>% as.data.frame() %>%  kable(caption = "Comparing Model Out-of-Sample Performance")
+perform <- cbind(Models = models, RMSE = rmse) %>% as.data.frame() %>%  
+  kable(caption = "Comparing Model Out-of-Sample Performance")
 ## MAPS
 
 calhousing = calhousing %>% 

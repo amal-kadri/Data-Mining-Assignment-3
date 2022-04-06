@@ -1,61 +1,117 @@
-library(tidyverse)
-library(ggplot2)
-library(rpart)
-library(rpart.plot)
-library(randomForest)
-library(rsample)
-library(modelr)
-library(fastDummies)
+dengue <- read_csv(file.path(path, "data", "dengue.csv"))
 
-# Question 2
-# Each row in the data set corresponds to a single week in a single city. The 
-# variables in the data set are as follows:
-# total_cases: Total recorded number of dengue fever cases that week. This is 
-  # the outcome variable of interest in all regression models. 
-# city: City in which the data was recorded (sj = San Juan, Puerto Rico; 
-  # iq = Iquitos, Peru) 
-# season: Season the data was recorded (spring, summer, fall, winter) 
-# specific_humidity:Average specific humidity in grams of water per kilogram of 
-  # air for the week. This is a raw measure of humidity based purely on how much 
-  # water is in the air.
-# tdtr_k: Average Diurnal Temperature Range (DTR) for the week. DTR is the 
-#   difference between the maximum and minimum temperature for a single day.
-# precipitation_amt: Rainfall for the week in millimeters
-dengue <- read_csv(file.path(path, "data/dengue.csv"))
-
-#adding dummies for city and season, removing original columns
-dengue = dummy_cols(dengue)
-dengue = dengue %>% select(-c(city, season))
-#dengue = na.exclude(dengue) ### suss NA solution from the internet
-
-#Displays how many NAs are in a given column
+#Displays how many NAs are in a given column, then remove them
+# 214 out of 1456 observations dropped by removing NAs here, not great, but best performance
 sapply(dengue, function(x) sum(is.na(x)))
+dengue = na.exclude(dengue)
+#recode(season, spring=1, summer=2, fall=3, winter=4)
+# recoding categorical variables to make PD plots, removing irrelevant columns
+#season_num = factor(season, levels = c("spring", "summer", "fall", "winter"))
+#recode(city, sj=0, iq=1)
+
+dengue <- dengue %>% 
+  mutate(season_num = factor(season, levels = c("spring", "summer", "fall", "winter")), 
+         city_num = factor(city, levels = c("sj", "iq")), 
+         specific_humidity = as.numeric(specific_humidity),
+         precipitation_amt = as.numeric(precipitation_amt)) %>%
+  dplyr::select(-c(city, season)) %>% 
+  as.data.frame()
+
 
 #train-test split
 dengue_split = initial_split(dengue, prop = .8)
 dengue_train = training(dengue_split)
 dengue_test = testing(dengue_split)
 
-#CART
-dengue_tree = rpart(total_cases ~ season_winter + season_spring 
-                    + season_summer + season_fall 
-                    + city_iq + city_sj
-                    + specific_humidity + tdtr_k + precipitation_amt, 
+#CART (CV build in)
+dengue_tree_spec = rpart(total_cases ~ . -ndvi_ne - ndvi_nw - ndvi_se - ndvi_sw,
                     data = dengue_train, control = rpart.control(cp = 0.00001))
-
+dengue_tree = rpart(total_cases ~ .,
+                    data = dengue_train, control = rpart.control(cp = 0.00001))
 #Random Forest
-# both models run pretty quick
-# only 13 out of 1164 observations dropped by excluding NAs
-dengue_forest = randomForest(total_cases ~ season_winter + season_spring 
-                             + season_summer + season_fall 
-                             + city_iq + city_sj
-                             + specific_humidity + tdtr_k + precipitation_amt,
-                              data = dengue_train, importance = TRUE,
-                              na.action = na.exclude)
-######################
-# 194 observations dropped by removing NAs here, less great
 dengue_forest_all = randomForest(total_cases ~ .,
                              data = dengue_train, importance = TRUE, 
                              na.action = na.exclude)
+dengue_forest_spec = randomForest(total_cases ~ . - ndvi_ne - ndvi_nw - ndvi_se - ndvi_sw,
+                                 data = dengue_train, importance = TRUE, 
+                                 na.action = na.exclude)
+
+specimp <- varImpPlot(dengue_forest_spec)
+varImpPlot(dengue_forest_all)
+
 ######################
+
+#boost
+boost1 = gbm(total_cases ~ .,
+                         data = dengue_train,
+             interaction.depth=5, n.trees=500, shrinkage=.05, cv.folds = 10)
+
+ctrl <- trainControl(
+  method = "cv",
+  number = 10
+)
+
+tuneGrid <- expand.grid(
+  n.trees = c(50, 60, 70, 80, 90, 100),
+  interaction.depth = c(1, 2, 3, 4, 5),
+  shrinkage = 0.1,
+  n.minobsinnode = 10
+)
+
+dengue_boost <- train(
+  total_cases ~ .,
+  data = dengue_train,
+  method = 'gbm',
+  trControl = ctrl,
+  tuneGrid = tuneGrid,
+  verbose = F
+)
+
+# AMAL I'M GETTING AN ERROR HERE
+# # Look at error curve -- stops decreasing much after ~300
+# gbmPerf_dengue <- gbm.perf(dengue)
+
+yhat_test_gbm = predict(boost1, dengue_test, n.trees=50)
+yhat_test_gbm = predict(dengue_boost, dengue_test, n.trees=50)
+
+# RMSEs
+tree_all = modelr::rmse(dengue_tree, dengue_test)
+tree_engineer = modelr::rmse(dengue_tree_spec, dengue_test)
+forest_all = modelr::rmse(dengue_forest_all, dengue_test) #Best so far
+forest_engineer = modelr::rmse(dengue_forest_spec, dengue_test)
+boost_all = modelr::rmse(boost1, dengue_test) # i think this works
+boost_cv = modelr::rmse(dengue_boost, dengue_test)
+
+model = c("tree_all", "tree_engineer", "forest_all", "forest_engineer", "boost_all")
+rmse = c(tree_all, tree_engineer, forest_all, forest_engineer, boost_all)
+
+rmse_table = data.frame(model,rmse) %>% 
+  kable(caption = "Dengue Models Out-of-Sample Performance Comparison")
+# # boost predict rmse
+# (yhat_test_gbm - dengue_test$total_cases)^2 %>% mean %>% sqrt
+# 
+# # tests rmse
+# yhat_test_gbm = predict(boost1, dengue_test, n.trees=50)
+
+# make var importance plot
+# use this to decide the PD plots to make
+forest_all_imp_plot <- varImpPlot(dengue_forest_all)
+
+# PD plots
+pd_spechum <- partialPlot(dengue_forest_all, 
+                          dengue_test, 
+                          'specific_humidity', 
+                          las=1)
+pd_city <- partialPlot(dengue_forest_all, 
+                       dengue_test, 
+                       'precipitation_amt', 
+                       las=1)
+pd_season <- partialPlot(dengue_forest_all, 
+                         dengue_test, 
+                         'season_num', 
+                         las=1)
+pd_min_temp <- partialPlot(dengue_forest_all, 
+                       dengue_test, 
+                       'min_air_temp_k', 
+                       las=1)
 

@@ -1,7 +1,7 @@
 ---
 title: "Assignment 3"
 author: "John Bowman, Amal Kadri, and David Scolari"
-date: "3/27/2022"
+date: "4/06/2022"
 output: html_document
 ---
 
@@ -9,7 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
-```{r source_path, include=FALSE echo = FALSE}
+```{r source_path, include=FALSE}
 library(here)
 path <- here()
 
@@ -39,8 +39,33 @@ For this question, we chose to use number of dengue cases (rather than the log) 
 Across model specifications and tree types, random forest regressions was a consistent winner when it came to performance. Displayed here are RMSE's for 5 regression models: A tree model with all covariates and one with some amount of feature engineering, the same for random forest, and the best boosted tree model we could make. The RMSE for the random forest with all covariates was the best performing across many train test splits. Even with some manual engineering, and cross validated tuning, we could not get the gradient boosted tree model to outperform the the random forest more than once or twice. This is a testament to why random forests are the benchmark standard for supervised learning techniques, especially since, of all the methods we tried, the random forest was the easiest to implement.
 
 Along with `specific_humidity` and `precipitation_amt`, we chose to include PD plots for `season` and `min_air_temp_k` variables, as they both back up the same underlying temperature relationship. These choices were partially informed by the *variable importance plot* we made from our forest model, choosing variables that seemed to have the strongest effect on dengue cases. Dengue cases seem to rapidly increase at around 18 grams water per kg air, likely because this is the humidity level that allows mosquitoes to thrive. Interestingly though, dengue cases seem to decrease with precipitation, likely because the mosquitoes that spread it aren't out during the heavy rains. Though we did postulate that potentially a lagged precipitation variable of the amount of rain 1-2 weeks prior might actually be correlated with higher dengue cases, as mosquitoes congregate around standing water that might accumulate after rains. It's difficult to make claims about the reasons for the right tail of the plot, as the upturned section is drawn from less than 10% of the data, and it might potentially be anomalous. Both the `season` and `min_air_temp_k` tell the same story that dengue cases tend to increase with temperature, peaking in the summer months. There is a sharp increase in dengue cases at around 297 degrees K (~24 C, ~70 F). Texans know that without some extended cold weather or a nice freeze, mosquitos won't be killed off in the winter and they become unbearable in later months.
-```{r dengue_trees}
 
+```{r dengue_trees performance}
+rmse_table
+```
+
+```{r dengue_trees imp plots}
+varImpPlot(dengue_forest_spec)
+varImpPlot(dengue_forest_all)
+```
+
+```{r dengue_trees pdplots}
+partialPlot(dengue_forest_all, 
+                          dengue_test, 
+                          'specific_humidity', 
+                          las=1)
+partialPlot(dengue_forest_all, 
+                       dengue_test, 
+                       'precipitation_amt', 
+                       las=1)
+partialPlot(dengue_forest_all, 
+                         dengue_test, 
+                         'season_num', 
+                         las=1)
+partialPlot(dengue_forest_all, 
+                       dengue_test, 
+                       'min_air_temp_k', 
+                       las=1)
 ```
 
 ## Green Certification
@@ -56,8 +81,24 @@ City_Market_Rent held the highest node purity, which is to be expected since it 
 
 age partial dependence plot sharply rises then gradually falls, representing the loss in values which occurs as a building ages. There is another spike then plateaus when the representative building turns 100 which represents the expected value that is placed on living in a historical building. This explanatory power corroborated with age's high rank on both the %IncMSE and node purity.
 
-```{r green_certification}
+```{r green_certification coefs}
+green_coef
+```
 
+```{r green_certification performance}
+onlygreens_performer
+```
+
+```{r green_certification how good}
+forest_howgood
+```
+
+```{r green_certification pd}
+partialPlot(green_forest, green_test, 'age', las=1)
+partialPlot(green_forest, green_test, 'size', las=1)
+partialPlot(green_forest, green_test, 'stories', las=1)
+partialPlot(green_forest, green_test, 'City_Market_Rent', las=1)
+partialPlot(green_forest, green_test, 'green_rating', las=1)
 ```
 
 ## California Houses
@@ -65,14 +106,14 @@ age partial dependence plot sharply rises then gradually falls, representing the
 ```{r california_houses how well}
 howwell_chforest
 ```
-
+type stuff here
 ```{r california_houses importance}
-chf_imp
+varImpPlot(calhousing_forest)
 ```
 
 ```{r california_houses pds}
-pd_lat
-pd_lng
+partialPlot(calhousing_forest, calhousing_test, 'longitude', las=1)
+partialPlot(calhousing_forest, calhousing_test, 'latitude', las=1)
 ```
 
 ```{r california_houses boostest}
