@@ -18,25 +18,7 @@ green_split = initial_split(onlygreens, prop = 0.8)
 green_train = training(green_split)
 green_test = testing(green_split)
 
-#lasso model w/ comp
-greenY <- green_train$rent_psf
-greenX <- model.matrix(rent_psf ~ (.-CS_PropertyID - cluster - amenities- LEED - Energystar)^2 -1, data = green_train)
-
-greenLasso_Wcomp <- cv.glmnet(x = greenX,y = greenY ,alpha = 1, nfold = 20, trace.it = 1, standardize = FALSE)
-
-### Make table of coeff for display
-
-green_coef_Wcomp = coef(greenLasso_Wcomp) %>%
-  as.matrix %>% 
-  as.data.frame() %>% 
-  mutate(mag = abs(s1)) %>% 
-  filter(mag > 0)
-
-# change row names
-green_coef_Wcomp <- tibble::rownames_to_column(green_coef_Wcomp, "VALUE")
-green_coef_Wcomp = green_coef_Wcomp[2:nrow(green_coef_Wcomp),1]
-
-#lasso model w/o Rent and leasing_rate
+#lasso model
 greenY <- green_train$rent_psf
 greenX <- model.matrix(rent_psf ~ (.-CS_PropertyID - cluster - amenities - Rent - leasing_rate - LEED - Energystar)^2 -1, data = green_train)
 
